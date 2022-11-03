@@ -97,8 +97,8 @@
                 np.array([self.robot.px, self.robot.py]) - np.array(self.robot.get_goal_position()))
             reward = 2 * (-abs(potential_cur) - self.potential) 
             self.potential = -abs(potential_cur)
-            # reward = reward2 + next_collision_reward + next_closest_reward
-            # print("nothing", reward, reward2)
+            reward = reward2 + next_collision_reward + next_closest_reward
+            print("nothing", reward, reward2)
 
             done = False
             episode_info = Nothing()
