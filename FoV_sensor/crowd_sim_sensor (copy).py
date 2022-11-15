@@ -706,102 +706,174 @@ class CrowdSim(gym.Env):
     # robot1: is True if state1 is robot, else is False
     # return value:
     # return True if state2 is visible to state1, else return False
-    def detect_visible(self, state1, state2, robot1 = False, custom_fov=None):
-        if self.robot.kinematics == 'holonomic':
-            real_theta = np.arctan2(state1.vy, state1.vx)
-        else:
-            real_theta = state1.theta
-        # angle of center line of FOV of agent1
-        v_fov = [np.cos(real_theta), np.sin(real_theta)]
+#     def detect_visible(self, state1, state2, robot1 = False, custom_fov=None):
+#         if self.robot.kinematics == 'holonomic':
+#             real_theta = np.arctan2(state1.vy, state1.vx)
+#         else:
+#             real_theta = state1.theta
+#         # angle of center line of FOV of agent1
+#         v_fov = [np.cos(real_theta), np.sin(real_theta)]
 
-        # angle between agent1 and agent2
-        v_12 = [state2.px - state1.px, state2.py - state1.py]
-        # angle between center of FOV and agent 2
-        v_fov = v_fov / np.linalg.norm(v_fov)
-        distance = np.linalg.norm(v_12)
-        v_12 = v_12 / np.linalg.norm(v_12)
+#         # angle between agent1 and agent2
+#         v_12 = [state2.px - state1.px, state2.py - state1.py]
+#         # angle between center of FOV and agent 2
+#         v_fov = v_fov / np.linalg.norm(v_fov)
+#         distance = np.linalg.norm(v_12)
+#         v_12 = v_12 / np.linalg.norm(v_12)
         
 
-        offset = np.arccos(np.clip(np.dot(v_fov, v_12), a_min=-1, a_max=1))
+#         offset = np.arccos(np.clip(np.dot(v_fov, v_12), a_min=-1, a_max=1))
         
-        if custom_fov:
-            fov = custom_fov
-        else:
-            if robot1:
-                fov = self.robot_fov
-            else:
-                fov = self.human_fov
-        # print(offset)
-        if np.abs(offset) <= fov / 2:
-            self.angle_mask = round(offset,1)
-            self.dis_mask = distance
-            return True 
-        else:
-            self.angle_mask = round(offset,1)
-            self.dis_mask = distance
-            return False
+#         if custom_fov:
+#             fov = custom_fov
+#         else:
+#             if robot1:
+#                 fov = self.robot_fov
+#             else:
+#                 fov = self.human_fov
+#         # print(offset)
+#         if np.abs(offset) <= fov / 2:
+#             self.angle_mask = round(offset,1)
+#             self.dis_mask = distance
+#             return True 
+#         else:
+#             self.angle_mask = round(offset,1)
+#             self.dis_mask = distance
+#             return False
 
 
-    # for robot:
-    # return only visible humans to robot and number of visible humans and visible humans' ids (0 to 4)
+#     # for robot:
+#     # return only visible humans to robot and number of visible humans and visible humans' ids (0 to 4)
 
-    # def get_num_human_in_fov(self):
-    #     human_ids = []
-    #     humans_in_view = []
-    #     num_humans_in_view = 0
+#     # def get_num_human_in_fov(self):
+#     #     human_ids = []
+#     #     humans_in_view = []
+#     #     num_humans_in_view = 0
 
-    #     for i in range(self.human_num):
-    #         visible = self.detect_visible(self.robot, self.humans[i], robot1=True)
-    #         if visible:
-    #             humans_in_view.append(self.humans[i])
-    #             num_humans_in_view = num_humans_in_view + 1
-    #             human_ids.append(True)
-    #         else:
-    #             human_ids.append(False)
+#     #     for i in range(self.human_num):
+#     #         visible = self.detect_visible(self.robot, self.humans[i], robot1=True)
+#     #         if visible:
+#     #             humans_in_view.append(self.humans[i])
+#     #             num_humans_in_view = num_humans_in_view + 1
+#     #             human_ids.append(True)
+#     #         else:
+#     #             human_ids.append(False)
 
-    #     return humans_in_view, num_humans_in_view, human_ids
+#     #     return humans_in_view, num_humans_in_view, human_ids
 
-    def get_num_human_in_fov(self):
-        human_ids = []
-        humans_in_view = []
-        num_humans_in_view = 0
-        num_human = 0 
-        list = []
-        human_in = []
+#     def get_num_human_in_fov(self):
+#         human_ids = []
+#         humans_in_view = []
+#         num_humans_in_view = 0
+#         num_human = 0 
+#         list = []
+#         human_in = []
 
 
-        for i in range(self.human_num):
-            visible = self.detect_visible(self.robot, self.humans[i], robot1=True)
-            angle, dis = self.angle_mask, self.dis_mask
-            if visible:
-                humans_in_view.append(self.humans[i])
-                num_humans_in_view = num_humans_in_view + 1
-                human_ids.append(True)
-                list.append([num_humans_in_view, visible, angle, dis])
-            else:
-                human_ids.append(False)
-        sort_list= sorted(list, key=lambda list:-list[3])
-        sort_list = np.array(sort_list)
-        print(angle)
-        check = []
+#         for i in range(self.human_num):
+#             visible = self.detect_visible(self.robot, self.humans[i], robot1=True)
+#             angle, dis = self.angle_mask, self.dis_mask
+#             if visible:
+#                 humans_in_view.append(self.humans[i])
+#                 num_humans_in_view = num_humans_in_view + 1
+#                 human_ids.append(True)
+#                 list.append([num_humans_in_view, visible, angle, dis])
+#             else:
+#                 human_ids.append(False)
+#         sort_list= sorted(list, key=lambda list:-list[3])
+#         sort_list = np.array(sort_list)
+#         print(angle)
+#         check = []
 
-        for num in range(num_humans_in_view):
-            # print(sort_list.shape)
+#         for num in range(num_humans_in_view):
+#             # print(sort_list.shape)
             
-            if sort_list[num, 2] not in check:
-                # print("print", sort_list[num,2], num)
-                check.append(sort_list[num, 2])
-                num_human = num_human + 1
-                human_in.append(humans_in_view[num])
+#             if sort_list[num, 2] not in check:
+#                 # print("print", sort_list[num,2], num)
+#                 check.append(sort_list[num, 2])
+#                 num_human = num_human + 1
+#                 human_in.append(humans_in_view[num])
 
-            else:
-                human_ids[num] = False
+#             else:
+#                 human_ids[num] = False
 
-        print(human_in, num_human, human_ids)     
+#         print(human_in, num_human, human_ids)     
 
-        return human_in, num_human, human_ids
+#         return human_in, num_human, human_ids
 
+	def detect_visible(self, state1, state2, robot1 = False, custom_fov=None, is_occlusion_considered=False):
+	    if self.robot.kinematics == 'holonomic':
+		real_theta = np.arctan2(state1.vy, state1.vx)
+	    else:
+		real_theta = state1.theta
+	    # angle of center line of FOV of agent1
+	    v_fov = [np.cos(real_theta), np.sin(real_theta)]
 
+	    # angle between agent1 and agent2
+	    v_12 = [state2.px - state1.px, state2.py - state1.py]
+	    # angle between center of FOV and agent 2
+	    v_fov = v_fov / np.linalg.norm(v_fov)
+	    distance = np.linalg.norm(v_12)
+	    v_12 = v_12 / np.linalg.norm(v_12)
+
+	    offset = np.arccos(np.clip(np.dot(v_fov, v_12), a_min=-1, a_max=1))
+
+	    if custom_fov:
+		fov = custom_fov
+	    else:
+		if robot1:
+		    fov = self.robot_fov
+		else:
+		    fov = self.human_fov
+
+	    # a variable to check if the state2 is in fov of state1
+	    is_in_fov = False
+	    if np.abs(offset) <= fov / 2:
+		is_in_fov = True
+	    else:
+		is_in_fov = False
+
+	    if is_occlusion_considered:
+		return is_in_fov, v_12, distance
+	    else:
+		return is_in_fov
+
+	def get_num_human_in_fov(self):
+	    human_ids = []
+	    humans_in_view = []
+	    num_humans_in_view = 0
+	    visibility_info_arr = np.zeros([self.human_num, 4])
+	    occulsion_angle_threshold = 0.01
+
+	    for i in range(self.human_num):
+		visible, unit_vector, distance = self.detect_visible(self.robot, self.humans[i], robot1=True, is_occlusion_considered=True)
+		# store visibility information
+		visibility_info_arr[i,0] = visible
+		visibility_info_arr[i,1:3] = unit_vector
+		visibility_info_arr[i,3] = distance
+
+	    # get indices of visible humans
+	    visible_human_idx = np.where(visibility_info_arr[:,0])[0]
+	    info_visible = visibility_info_arr[visible_human_idx]
+	    # compute angle difference between humans
+	    angle_diff = info_visible[:,1:3].dot(info_visible[:,1:3].T) - np.eye(len(info_visible))
+	    angle_diff = 1 - angle_diff
+	    angle_occlusion_mask = angle_diff < occulsion_angle_threshold
+	    # compute distance difference between humans
+	    dist_diff = info_visible[:,3][:,None] - info_visible[:,3][None,:]
+	    dist_occlusion_mask = dist_diff > 0
+	    # compute occulusion mask
+	    occlusion_mask = np.any(angle_occlusion_mask*dist_occlusion_mask, axis=1)
+	    info_visible[:,0] = info_visible[:,0]*(1 - occlusion_mask) + False*occlusion_mask
+	    # update visbility
+	    visibility_info_arr[visible_human_idx, 0] = True*info_visible[:,0]
+
+	    # arrange info
+	    human_ids = visibility_info_arr[:,0].tolist()
+	    humans_in_view = [self.humans[i] for idx in range(self.human_num) if human_ids[idx]]
+	    num_humans_in_view = len(humans_in_view)
+
+	    return humans_in_view, num_humans_in_view, human_ids
 
 
     # def detect_visible(self, state1, state2, robot1 = False, custom_fov=None):
